@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Run `composer format` (Rector + Pint) before each commit, then re-stage the staged files.
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+echo "Running composer format..."
+composer format || exit 1
+
+if [ -n "$STAGED_FILES" ]; then
+    echo "$STAGED_FILES" | xargs git add
+fi
