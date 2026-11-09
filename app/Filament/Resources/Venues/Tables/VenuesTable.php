@@ -20,6 +20,8 @@ class VenuesTable
                     ->searchable(),
                 TextColumn::make('country')
                     ->searchable(),
+                TextColumn::make('region')
+                    ->sortable(),
                 TextColumn::make('postal_code')
                     ->searchable(),
                 TextColumn::make('created_at')

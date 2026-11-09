@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\ConferenceStatus;
+use App\Enums\Region;
 use App\Models\Venue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,7 +22,7 @@ class ConferenceFactory extends Factory
             'start_date' => $startDate,
             'end_date' => (clone $startDate)->modify('+'.fake()->numberBetween(1, 3).' days'),
             'status' => fake()->randomElement(ConferenceStatus::cases()),
-            'region' => fake()->word(),
+            'region' => fake()->randomElement(Region::cases()),
             'venue_id' => Venue::factory(),
             'is_published' => fake()->boolean(),
         ];

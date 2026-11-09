@@ -28,7 +28,7 @@ class ConferencesTable
                     ->badge()
                     ->sortable(),
                 TextColumn::make('region')
-                    ->searchable(),
+                    ->sortable(),
                 TextColumn::make('venue.name')
                     ->sortable(),
                 IconColumn::make('is_published')
