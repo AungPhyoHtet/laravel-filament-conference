@@ -18,7 +18,7 @@ class TalkResource extends Resource
 {
     protected static ?string $model = Talk::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMicrophone;
 
     protected static ?string $recordTitleAttribute = 'title';
 

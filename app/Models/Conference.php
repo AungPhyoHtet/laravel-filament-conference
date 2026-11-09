@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ConferenceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +23,9 @@ class Conference extends Model
             'id' => 'integer',
             'start_date' => 'datetime',
             'end_date' => 'datetime',
+            'status' => ConferenceStatus::class,
             'venue_id' => 'integer',
+            'is_published' => 'boolean',
         ];
     }
 
