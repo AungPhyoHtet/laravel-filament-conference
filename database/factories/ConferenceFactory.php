@@ -22,8 +22,9 @@ class ConferenceFactory extends Factory
             'start_date' => $startDate,
             'end_date' => (clone $startDate)->modify('+'.fake()->numberBetween(1, 3).' days'),
             'status' => fake()->randomElement(ConferenceStatus::cases()),
-            'region' => fake()->randomElement(Region::cases()),
             'venue_id' => Venue::factory(),
+            'region' => fn (array $attributes): Region => Venue::query()->find($attributes['venue_id'])?->region
+                ?? fake()->randomElement(Region::cases()),
             'is_published' => fake()->boolean(),
         ];
     }

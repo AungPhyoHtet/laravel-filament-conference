@@ -2,6 +2,8 @@
 
 use App\Enums\Region;
 use App\Filament\Resources\Conferences\Pages\CreateConference;
+use App\Models\Conference;
+use App\Models\Speaker;
 use App\Models\User;
 use App\Models\Venue;
 use Filament\Actions\Testing\TestAction;
@@ -54,4 +56,24 @@ it('edits the selected venue from the venue select', function (): void {
         ->assertHasNoFormErrors();
 
     expect($venue->refresh()->name)->toBe('New Hall');
+});
+
+it('attaches the selected speakers to the conference', function (): void {
+    $speakers = Speaker::factory(2)->create();
+    Speaker::factory()->create();
+
+    livewire(CreateConference::class)
+        ->fillForm([
+            'name' => 'Laracon',
+            'description' => 'A Laravel conference.',
+            'start_date' => now()->addMonth(),
+            'end_date' => now()->addMonth()->addDay(),
+            'region' => Region::Europe->value,
+            'speakers' => $speakers->modelKeys(),
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Conference::query()->sole()->speakers->modelKeys())
+        ->toEqualCanonicalizing($speakers->modelKeys());
 });

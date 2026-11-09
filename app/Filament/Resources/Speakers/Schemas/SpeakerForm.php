@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Speakers\Schemas;
 
+use App\Enums\SpeakerQualification;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -23,6 +25,12 @@ class SpeakerForm
                     ->columnSpanFull(),
                 TextInput::make('twitter_handle')
                     ->required(),
+                CheckboxList::make('qualifications')
+                    ->options(SpeakerQualification::class)
+                    ->columns(2)
+                    ->searchable()
+                    ->bulkToggleable()
+                    ->columnSpanFull(),
             ]);
     }
 }

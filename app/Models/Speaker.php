@@ -19,6 +19,7 @@ class Speaker extends Model
     {
         return [
             'id' => 'integer',
+            'qualifications' => 'array',
         ];
     }
 

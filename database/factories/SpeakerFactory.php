@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\SpeakerQualification;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SpeakerFactory extends Factory
@@ -16,6 +17,7 @@ class SpeakerFactory extends Factory
             'email' => fake()->safeEmail(),
             'bio' => fake()->text(),
             'twitter_handle' => fake()->word(),
+            'qualifications' => array_column(fake()->randomElements(SpeakerQualification::cases(), fake()->numberBetween(0, 3)), 'value'),
         ];
     }
 }

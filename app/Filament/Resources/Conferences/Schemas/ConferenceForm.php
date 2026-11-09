@@ -76,6 +76,12 @@ class ConferenceForm
                     ->preload()
                     ->createOptionForm(fn (Schema $schema): Schema => VenueForm::configure($schema))
                     ->editOptionForm(fn (Schema $schema): Schema => VenueForm::configure($schema)),
+                Select::make('speakers')
+                    ->relationship('speakers', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->columnSpanFull(),
             ]);
     }
 }
