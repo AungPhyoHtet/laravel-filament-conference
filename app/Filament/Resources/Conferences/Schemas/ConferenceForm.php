@@ -6,12 +6,15 @@ use App\Enums\ConferenceStatus;
 use App\Enums\Region;
 use App\Filament\Concerns\BuildsFormSections;
 use App\Filament\Resources\Venues\Schemas\VenueForm;
+use App\Models\Conference;
 use App\Models\Venue;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -30,6 +33,25 @@ class ConferenceForm
             ->components([
                 self::detailsSection(),
                 self::locationSection(),
+                Actions::make([
+                    Action::make('star')
+                        ->label('Fill with Factory Data')
+                        ->icon('heroicon-m-star')
+                        ->visible(function (string $operation) {
+                            if ($operation !== 'create') {
+                                return false;
+                            }
+                            if (! app()->environment('local')) {
+                                return false;
+                            }
+
+                            return true;
+                        })
+                        ->action(function ($livewire) {
+                            $data = Conference::factory()->make()->toArray();
+                            $livewire->form->fill($data);
+                        }),
+                ]),
             ]);
     }
 
