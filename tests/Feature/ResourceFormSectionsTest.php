@@ -18,5 +18,5 @@ it('renders the create form sections', function (string $page, array $sections):
     'conference' => [CreateConference::class, ['Conference Details', 'Status', 'Speakers', 'Location']],
     'venue' => [CreateVenue::class, ['Venue Details', 'Address', 'Images']],
     'speaker' => [CreateSpeaker::class, ['Profile', 'Qualifications']],
-    'talk' => [CreateTalk::class, ['Talk Details', 'Speaker']],
+    'talk' => [CreateTalk::class, ['Talk Details', 'Submission', 'Speaker']],
 ]);

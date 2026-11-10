@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\SpeakerQualification;
+use App\Models\Talk;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SpeakerFactory extends Factory
@@ -17,7 +18,15 @@ class SpeakerFactory extends Factory
             'email' => fake()->safeEmail(),
             'bio' => fake()->text(),
             'twitter_handle' => fake()->word(),
-            'qualifications' => array_column(fake()->randomElements(SpeakerQualification::cases(), fake()->numberBetween(0, 3)), 'value'),
+            'qualifications' => collect(SpeakerQualification::cases())->shuffle()->take(fake()->numberBetween(0, 3))->pluck('value')->all(),
         ];
+    }
+
+    /**
+     * Give the speaker a number of talks.
+     */
+    public function withTalks(int $count = 3): static
+    {
+        return $this->has(Talk::factory()->count($count));
     }
 }

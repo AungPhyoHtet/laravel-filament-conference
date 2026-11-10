@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\Talks\Schemas;
 
+use App\Enums\TalkLength;
+use App\Enums\TalkStatus;
 use App\Filament\Concerns\BuildsFormSections;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -19,6 +22,7 @@ class TalkForm
         return $schema
             ->components([
                 self::detailsSection(),
+                self::submissionSection(),
                 self::speakerSection(),
             ]);
     }
@@ -31,6 +35,25 @@ class TalkForm
                     ->required(),
                 Textarea::make('abstract')
                     ->required(),
+            ]);
+    }
+
+    protected static function submissionSection(): Section
+    {
+        return self::section('Submission', 'Review status, length and whether the talk is new.', Heroicon::OutlinedClipboardDocumentCheck)
+            ->schema([
+                Select::make('status')
+                    ->options(TalkStatus::class)
+                    ->default(TalkStatus::Submitted)
+                    ->required(),
+                Select::make('length')
+                    ->options(TalkLength::class)
+                    ->default(TalkLength::Normal)
+                    ->required(),
+                Toggle::make('new_talk')
+                    ->label('New talk')
+                    ->helperText('Has not been given at another conference.')
+                    ->default(true),
             ]);
     }
 
