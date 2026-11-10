@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Speakers\Schemas;
 use App\Enums\SpeakerQualification;
 use App\Filament\Concerns\BuildsFormSections;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -28,6 +29,14 @@ class SpeakerForm
     {
         return self::section('Profile', 'Who the speaker is and how to reach them.', Heroicon::OutlinedUser)
             ->schema([
+                FileUpload::make('avatar')
+                    ->avatar()
+                    ->image()
+                    ->imageEditor()
+                    ->disk('public')
+                    ->directory('avatars')
+                    ->maxSize(10240)
+                    ->columnSpanFull(),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('email')

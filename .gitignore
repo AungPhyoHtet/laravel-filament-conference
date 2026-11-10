@@ -45,3 +45,7 @@ yarn-error.log
 Thumbs.db
 /draft.yaml
 /.blueprint
+
+/_ide_helper.php
+/_ide_helper_models.php
+/.phpstorm.meta.php

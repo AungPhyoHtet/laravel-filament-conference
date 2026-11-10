@@ -77,3 +77,24 @@ it('attaches the selected speakers to the conference', function (): void {
     expect(Conference::query()->sole()->speakers->modelKeys())
         ->toEqualCanonicalizing($speakers->modelKeys());
 });
+
+it('fills the create form with factory data using an existing venue', function (): void {
+    app()->detectEnvironment(fn (): string => 'local');
+    $venue = Venue::factory()->create();
+
+    livewire(CreateConference::class)
+        ->callAction(TestAction::make('fillWithFactoryData')->schemaComponent('factoryFillActions'))
+        ->assertSchemaStateSet([
+            'venue_id' => $venue->getKey(),
+            'region' => $venue->region,
+        ]);
+
+    expect(Venue::query()->count())->toBe(1)
+        ->and(Conference::query()->count())->toBe(0);
+});
+
+it('hides the factory fill action outside the local environment', function (): void {
+    livewire(CreateConference::class)
+        ->assertSuccessful()
+        ->assertDontSee('Fill with Factory Data');
+});

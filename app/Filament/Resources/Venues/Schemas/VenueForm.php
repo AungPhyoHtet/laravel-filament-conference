@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Venues\Schemas;
 use App\Enums\Region;
 use App\Filament\Concerns\BuildsFormSections;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -20,6 +21,7 @@ class VenueForm
             ->components([
                 self::detailsSection(),
                 self::addressSection(),
+                self::imagesSection(),
             ]);
     }
 
@@ -45,6 +47,20 @@ class VenueForm
                     ->required(),
                 TextInput::make('postal_code')
                     ->required(),
+            ]);
+    }
+
+    protected static function imagesSection(): Section
+    {
+        return self::section('Images', 'Photos of the venue.', Heroicon::OutlinedPhoto, columns: 1)
+            ->schema([
+                SpatieMediaLibraryFileUpload::make('images')
+                    ->hiddenLabel()
+                    ->collection('venue-images')
+                    ->multiple()
+                    ->reorderable()
+                    ->image()
+                    ->imageEditor(),
             ]);
     }
 }

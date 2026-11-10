@@ -16,7 +16,7 @@ it('renders the create form sections', function (string $page, array $sections):
         ->assertSeeInOrder($sections);
 })->with([
     'conference' => [CreateConference::class, ['Conference Details', 'Status', 'Speakers', 'Location']],
-    'venue' => [CreateVenue::class, ['Venue Details', 'Address']],
+    'venue' => [CreateVenue::class, ['Venue Details', 'Address', 'Images']],
     'speaker' => [CreateSpeaker::class, ['Profile', 'Qualifications']],
     'talk' => [CreateTalk::class, ['Talk Details', 'Speaker']],
 ]);

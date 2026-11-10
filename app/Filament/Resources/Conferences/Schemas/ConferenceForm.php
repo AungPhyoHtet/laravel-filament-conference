@@ -33,26 +33,26 @@ class ConferenceForm
             ->components([
                 self::detailsSection(),
                 self::locationSection(),
-                Actions::make([
-                    Action::make('star')
-                        ->label('Fill with Factory Data')
-                        ->icon('heroicon-m-star')
-                        ->visible(function (string $operation) {
-                            if ($operation !== 'create') {
-                                return false;
-                            }
-                            if (! app()->environment('local')) {
-                                return false;
-                            }
-
-                            return true;
-                        })
-                        ->action(function ($livewire) {
-                            $data = Conference::factory()->make()->toArray();
-                            $livewire->form->fill($data);
-                        }),
-                ]),
+                self::factoryFillActions(),
             ]);
+    }
+
+    /**
+     * Local-only helper that fills the create form with factory data, reusing an existing venue.
+     */
+    protected static function factoryFillActions(): Actions
+    {
+        return Actions::make([
+            Action::make('fillWithFactoryData')
+                ->label('Fill with Factory Data')
+                ->icon(Heroicon::OutlinedStar)
+                ->visible(fn (string $operation): bool => $operation === 'create' && app()->isLocal())
+                ->action(fn (Actions $schemaComponent): Schema => $schemaComponent->getRootContainer()->fill(
+                    Conference::factory()
+                        ->make(['venue_id' => Venue::query()->inRandomOrder()->value('id')])
+                        ->toArray(),
+                )),
+        ])->key('factoryFillActions');
     }
 
     protected static function detailsSection(): Section
