@@ -119,9 +119,9 @@ class TalksTable
                 Notification::make()
                     ->success()
                     ->title('Talk approved')
-                    ->body('The speaker has been notified and the talk has been added to the conference schedule.')
+                    ->body('The talk has been marked as approved.')
             )
-            ->action(function (Talk $record, Action $action): void {
+            ->action(function (Talk $record): void {
                 $record->approve();
             });
     }

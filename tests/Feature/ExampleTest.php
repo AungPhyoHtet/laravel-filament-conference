@@ -1,7 +1,13 @@
 <?php
 
-test('returns a successful response', function (): void {
-    $response = $this->get('/');
+use App\Models\User;
 
-    $response->assertOk();
+test('redirects guests from the panel home to the login page', function (): void {
+    $this->get('/')->assertRedirect(route('filament.app.auth.login'));
+});
+
+test('shows the panel home to signed-in users', function (): void {
+    $this->actingAs(User::factory()->create())
+        ->get('/')
+        ->assertOk();
 });
