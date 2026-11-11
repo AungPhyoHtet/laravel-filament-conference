@@ -44,5 +44,9 @@
                 <dd>{{ trans_choice(':count talk|:count talks', $conference->talks_count) }}</dd>
             </div>
         </dl>
+
+        <a href="{{ route('sign-up', ['conference' => $conference->getKey()]) }}" class="rounded-full bg-indigo-50 px-4 py-2 text-center text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20">
+            Sign up
+        </a>
     </div>
 </article>

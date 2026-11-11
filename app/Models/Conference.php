@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property CarbonImmutable $start_date
@@ -42,11 +43,12 @@ class Conference extends Model
      * Published conferences that are upcoming or ongoing and have not ended, soonest first.
      *
      * @param  Builder<Conference>  $query
+     * @return Builder<Conference>
      */
     #[Scope]
-    protected function listed(Builder $query): void
+    protected function listed(Builder $query): Builder
     {
-        $query
+        return $query
             ->where($query->qualifyColumn('is_published'), true)
             ->whereIn($query->qualifyColumn('status'), [ConferenceStatus::Upcoming, ConferenceStatus::Ongoing])
             ->where($query->qualifyColumn('end_date'), '>=', now())
@@ -66,14 +68,14 @@ class Conference extends Model
         }
 
         if ($start->isSameMonth($end)) {
-            return $start->format('M j') . ' – ' . $end->format('j, Y');
+            return $start->format('M j').' – '.$end->format('j, Y');
         }
 
         if ($start->isSameYear($end)) {
-            return $start->format('M j') . ' – ' . $end->format('M j, Y');
+            return $start->format('M j').' – '.$end->format('M j, Y');
         }
 
-        return $start->format('M j, Y') . ' – ' . $end->format('M j, Y');
+        return $start->format('M j, Y').' – '.$end->format('M j, Y');
     }
 
     public function venue(): BelongsTo
@@ -84,6 +86,14 @@ class Conference extends Model
     public function speakers(): BelongsToMany
     {
         return $this->belongsToMany(Speaker::class);
+    }
+
+    /**
+     * @return HasMany<Attendee, $this>
+     */
+    public function attendees(): HasMany
+    {
+        return $this->hasMany(Attendee::class);
     }
 
     public function talks(): BelongsToMany

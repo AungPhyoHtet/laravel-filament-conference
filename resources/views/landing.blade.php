@@ -19,11 +19,11 @@
                 </p>
 
                 <div class="flex flex-wrap gap-3">
-                    <a href="#conferences" class="rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                        Browse conferences
+                    <a href="{{ route('sign-up') }}" class="rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Sign up now
                     </a>
-                    <a href="#speakers" class="rounded-full px-6 py-3 text-sm font-semibold text-slate-900 ring-1 ring-slate-300 transition hover:ring-slate-400 dark:text-white dark:ring-slate-700 dark:hover:ring-slate-500">
-                        Meet the speakers
+                    <a href="#conferences" class="rounded-full px-6 py-3 text-sm font-semibold text-slate-900 ring-1 ring-slate-300 transition hover:ring-slate-400 dark:text-white dark:ring-slate-700 dark:hover:ring-slate-500">
+                        Browse conferences
                     </a>
                 </div>
             </div>
@@ -65,6 +65,10 @@
                                 <dd class="font-medium">{{ $featured->talks_count }}</dd>
                             </div>
                         </dl>
+
+                        <a href="{{ route('sign-up', ['conference' => $featured->getKey()]) }}" class="w-fit rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50">
+                            Save your seat
+                        </a>
                     </div>
                 </article>
             @endif
