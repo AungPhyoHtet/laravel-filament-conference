@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Speakers;
 
 use App\Filament\Resources\Speakers\Pages\ListSpeakers;
 use App\Filament\Resources\Speakers\Pages\ViewSpeaker;
+use App\Filament\Resources\Speakers\RelationManagers\TalksRelationManager;
 use App\Filament\Resources\Speakers\Schemas\SpeakerForm;
 use App\Filament\Resources\Speakers\Schemas\SpeakerInfolist;
 use App\Filament\Resources\Speakers\Tables\SpeakersTable;
@@ -40,7 +41,7 @@ class SpeakerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            TalksRelationManager::class,
         ];
     }
 

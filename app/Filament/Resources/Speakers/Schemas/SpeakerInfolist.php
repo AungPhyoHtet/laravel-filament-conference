@@ -5,10 +5,7 @@ namespace App\Filament\Resources\Speakers\Schemas;
 use App\Enums\SpeakerQualification;
 use App\Filament\Concerns\BuildsFormSections;
 use App\Models\Speaker;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
@@ -25,7 +22,6 @@ class SpeakerInfolist
             ->components([
                 self::profileSection(),
                 self::qualificationsSection(),
-                self::talksSection(),
                 self::conferencesSection(),
             ]);
     }
@@ -78,30 +74,6 @@ class SpeakerInfolist
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => SpeakerQualification::tryFrom($state)?->getLabel() ?? $state)
                     ->placeholder('No qualifications listed.'),
-            ]);
-    }
-
-    protected static function talksSection(): Section
-    {
-        return self::section('Talks', 'Talks this speaker has submitted.', Heroicon::OutlinedMicrophone, columns: 1)
-            ->schema([
-                RepeatableEntry::make('talks')
-                    ->hiddenLabel()
-                    ->table([
-                        TableColumn::make('Title'),
-                        TableColumn::make('Status'),
-                        TableColumn::make('Length'),
-                        TableColumn::make('New'),
-                    ])
-                    ->schema([
-                        TextEntry::make('title'),
-                        TextEntry::make('status')
-                            ->badge(),
-                        TextEntry::make('length'),
-                        IconEntry::make('new_talk')
-                            ->boolean(),
-                    ])
-                    ->placeholder('No talks yet.'),
             ]);
     }
 

@@ -41,10 +41,11 @@ class TalksTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('abstract')
+                    ->formatStateUsing(fn (Talk $record): string => $record->plainAbstract())
                     ->extraAttributes(['style' => 'min-width: 32rem'])
                     ->wrap()
                     ->lineClamp(2)
-                    ->tooltip(fn (Talk $record): string => $record->abstract),
+                    ->tooltip(fn (Talk $record): string => $record->plainAbstract()),
                 ImageColumn::make('speaker.avatar')
                     ->label('Avatar')
                     ->disk('public')
@@ -107,7 +108,7 @@ class TalksTable
             ]);
     }
 
-    protected static function approveAction(): Action
+    public static function approveAction(): Action
     {
         return Action::make('approve')
             ->icon(Heroicon::OutlinedCheckCircle)
@@ -126,7 +127,7 @@ class TalksTable
             });
     }
 
-    protected static function rejectAction(): Action
+    public static function rejectAction(): Action
     {
         return Action::make('reject')
             ->icon(Heroicon::OutlinedXCircle)
@@ -145,7 +146,7 @@ class TalksTable
             });
     }
 
-    protected static function approveBulkAction(): BulkAction
+    public static function approveBulkAction(): BulkAction
     {
         return BulkAction::make('approve')
             ->label('Approve selected')
@@ -159,7 +160,7 @@ class TalksTable
             });
     }
 
-    protected static function rejectBulkAction(): BulkAction
+    public static function rejectBulkAction(): BulkAction
     {
         return BulkAction::make('reject')
             ->label('Reject selected')

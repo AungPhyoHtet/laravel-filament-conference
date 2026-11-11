@@ -16,7 +16,7 @@ class TalkFactory extends Factory
     {
         return [
             'title' => fake()->sentence(4),
-            'abstract' => fake()->text(),
+            'abstract' => '<p>'.fake()->text().'</p>',
             'new_talk' => fake()->boolean(),
             'status' => fake()->randomElement(TalkStatus::cases()),
             'length' => fake()->randomElement(TalkLength::cases()),

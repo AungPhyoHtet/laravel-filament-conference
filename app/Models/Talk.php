@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Talk extends Model
 {
@@ -38,6 +39,16 @@ class Talk extends Model
     public function conferences(): BelongsToMany
     {
         return $this->belongsToMany(Conference::class);
+    }
+
+    /**
+     * The rich text abstract as plain text, with block elements separated by spaces.
+     */
+    public function plainAbstract(): string
+    {
+        $text = preg_replace('/<\/(p|li|blockquote|h[1-6])>|<br\s*\/?>/i', ' ', (string) $this->abstract);
+
+        return Str::squish(html_entity_decode(strip_tags((string) $text), ENT_QUOTES | ENT_HTML5));
     }
 
     public function isApproved(): bool

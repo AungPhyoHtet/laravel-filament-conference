@@ -3,6 +3,7 @@
 use App\Enums\TalkLength;
 use App\Enums\TalkStatus;
 use App\Filament\Resources\Talks\Pages\CreateTalk;
+use App\Filament\Resources\Talks\Pages\EditTalk;
 use App\Filament\Resources\Talks\Pages\ListTalks;
 use App\Models\Speaker;
 use App\Models\Talk;
@@ -177,6 +178,34 @@ it('shows the abstract clamped to two lines with a minimum width', function (): 
 
             return true;
         }, $talk);
+});
+
+it('converts the rich text abstract to plain text', function (?string $abstract, string $plain): void {
+    expect(Talk::factory()->make(['abstract' => $abstract])->plainAbstract())->toBe($plain);
+})->with([
+    'paragraphs' => ['<p>First.</p><p>Second.</p>', 'First. Second.'],
+    'inline formatting' => ['<p><strong>Bold</strong> and <em>italic</em></p>', 'Bold and italic'],
+    'list items' => ['<ul><li>One</li><li>Two</li></ul>', 'One Two'],
+    'entities' => ['<p>Fish &amp; chips</p>', 'Fish & chips'],
+    'plain text' => ['Already plain', 'Already plain'],
+    'empty' => [null, ''],
+]);
+
+it('shows the abstract as plain text in the table', function (): void {
+    $talk = Talk::factory()->create(['abstract' => '<p><strong>Lessons</strong> from production.</p>']);
+
+    livewire(ListTalks::class)
+        ->assertTableColumnFormattedStateSet('abstract', 'Lessons from production.', $talk);
+});
+
+it('loads factory abstracts into the rich editor as paragraphs', function (): void {
+    $talk = Talk::factory()->create();
+
+    $editor = livewire(EditTalk::class, ['record' => $talk->getRouteKey()])
+        ->instance()
+        ->data['abstract'];
+
+    expect($editor['content'][0]['type'])->toBe('paragraph');
 });
 
 it('approves a talk from the table', function (): void {

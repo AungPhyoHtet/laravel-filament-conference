@@ -22,6 +22,7 @@ class TalkExporter extends Exporter
             ExportColumn::make('title')
                 ->preventFormulaInjection(),
             ExportColumn::make('abstract')
+                ->formatStateUsing(fn (Talk $record): string => $record->plainAbstract())
                 ->preventFormulaInjection(),
             ExportColumn::make('speaker.name')
                 ->label('Speaker')

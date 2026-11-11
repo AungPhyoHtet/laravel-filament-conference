@@ -62,12 +62,18 @@ it('exports readable labels and guards against formula injection', function (): 
     expect(TalkExporter::test()->export($talk))->toBe([
         (string) $talk->getKey(),
         '\'=HYPERLINK("evil")',
-        $talk->abstract,
+        $talk->plainAbstract(),
         'Ada Lovelace',
         'Approved',
         'Keynote',
         'No',
     ]);
+});
+
+it('exports the abstract as plain text with formula injection guarded', function (): void {
+    $talk = Talk::factory()->create(['abstract' => '<p>=SUM(A1) &amp; more</p><ul><li>One</li></ul>']);
+
+    expect(TalkExporter::test()->export($talk)[2])->toBe('\'=SUM(A1) & more One');
 });
 
 it('describes the active status tab in the export tooltip', function (?string $activeTab, string $tooltip): void {

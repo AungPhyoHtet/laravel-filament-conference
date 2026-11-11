@@ -1,13 +1,11 @@
 <?php
 
 use App\Enums\SpeakerQualification;
-use App\Enums\TalkStatus;
 use App\Filament\Resources\Speakers\Pages\ListSpeakers;
 use App\Filament\Resources\Speakers\Pages\ViewSpeaker;
 use App\Filament\Resources\Speakers\SpeakerResource;
 use App\Models\Conference;
 use App\Models\Speaker;
-use App\Models\Talk;
 use App\Models\User;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
@@ -20,13 +18,12 @@ beforeEach(function (): void {
     $this->actingAs(User::factory()->create());
 });
 
-it('shows the speaker profile, qualifications, talks and conferences', function (): void {
+it('shows the speaker profile, qualifications and conferences', function (): void {
     $speaker = Speaker::factory()->create([
         'name' => 'Ada Lovelace',
         'email' => 'ada@example.com',
         'qualifications' => [SpeakerQualification::PublishedAuthor->value],
     ]);
-    Talk::factory()->for($speaker)->create(['title' => 'Notes on the Engine', 'status' => TalkStatus::Approved]);
     $speaker->conferences()->attach(Conference::factory()->create(['name' => 'Laracon EU']));
 
     livewire(ViewSpeaker::class, ['record' => $speaker->getRouteKey()])
@@ -36,18 +33,15 @@ it('shows the speaker profile, qualifications, talks and conferences', function 
             'email' => 'ada@example.com',
         ])
         ->assertSee('Published Author')
-        ->assertSee('Notes on the Engine')
-        ->assertSee('Approved')
         ->assertSee('Laracon EU');
 });
 
-it('shows placeholders for a speaker with no talks or conferences', function (): void {
+it('shows placeholders for a speaker with no qualifications or conferences', function (): void {
     $speaker = Speaker::factory()->create(['qualifications' => []]);
 
     livewire(ViewSpeaker::class, ['record' => $speaker->getRouteKey()])
         ->assertOk()
         ->assertSee('No qualifications listed.')
-        ->assertSee('No talks yet.')
         ->assertSee('Not booked for any conferences.');
 });
 
