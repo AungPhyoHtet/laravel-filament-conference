@@ -16,7 +16,7 @@ class SpeakerFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->safeEmail(),
-            'bio' => fake()->text(),
+            'bio' => '<p>'.fake()->text().'</p>',
             'twitter_handle' => fake()->word(),
             'qualifications' => collect(SpeakerQualification::cases())->shuffle()->take(fake()->numberBetween(0, 3))->pluck('value')->all(),
         ];

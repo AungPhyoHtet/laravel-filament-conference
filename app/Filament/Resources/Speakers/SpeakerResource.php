@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Speakers;
 
-use App\Filament\Resources\Speakers\Pages\CreateSpeaker;
-use App\Filament\Resources\Speakers\Pages\EditSpeaker;
 use App\Filament\Resources\Speakers\Pages\ListSpeakers;
+use App\Filament\Resources\Speakers\Pages\ViewSpeaker;
 use App\Filament\Resources\Speakers\Schemas\SpeakerForm;
+use App\Filament\Resources\Speakers\Schemas\SpeakerInfolist;
 use App\Filament\Resources\Speakers\Tables\SpeakersTable;
 use App\Models\Speaker;
 use BackedEnum;
@@ -27,6 +27,11 @@ class SpeakerResource extends Resource
         return SpeakerForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return SpeakerInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return SpeakersTable::configure($table);
@@ -43,8 +48,7 @@ class SpeakerResource extends Resource
     {
         return [
             'index' => ListSpeakers::route('/'),
-            'create' => CreateSpeaker::route('/create'),
-            'edit' => EditSpeaker::route('/{record}/edit'),
+            'view' => ViewSpeaker::route('/{record}'),
         ];
     }
 }

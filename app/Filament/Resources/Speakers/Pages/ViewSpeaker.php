@@ -3,17 +3,18 @@
 namespace App\Filament\Resources\Speakers\Pages;
 
 use App\Filament\Resources\Speakers\SpeakerResource;
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditSpeaker extends EditRecord
+class ViewSpeaker extends ViewRecord
 {
     protected static string $resource = SpeakerResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            EditAction::make()
+                ->slideOver(),
         ];
     }
 }

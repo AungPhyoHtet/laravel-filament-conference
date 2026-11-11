@@ -6,7 +6,7 @@ use App\Enums\SpeakerQualification;
 use App\Filament\Concerns\BuildsFormSections;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -45,7 +45,12 @@ class SpeakerForm
                     ->required(),
                 TextInput::make('twitter_handle')
                     ->required(),
-                Textarea::make('bio')
+                RichEditor::make('bio')
+                    ->toolbarButtons([
+                        ['bold', 'italic', 'underline', 'strike', 'link'],
+                        ['bulletList', 'orderedList', 'blockquote'],
+                        ['undo', 'redo'],
+                    ])
                     ->required()
                     ->columnSpanFull(),
             ]);

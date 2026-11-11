@@ -1,7 +1,6 @@
 <?php
 
 use App\Filament\Resources\Conferences\Pages\CreateConference;
-use App\Filament\Resources\Speakers\Pages\CreateSpeaker;
 use App\Filament\Resources\Talks\Pages\CreateTalk;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Venues\Pages\CreateVenue;
@@ -18,7 +17,6 @@ it('renders the create form sections', function (string $page, array $sections):
 })->with([
     'conference' => [CreateConference::class, ['Conference Details', 'Status', 'Speakers', 'Location']],
     'venue' => [CreateVenue::class, ['Venue Details', 'Address', 'Images']],
-    'speaker' => [CreateSpeaker::class, ['Profile', 'Qualifications']],
     'talk' => [CreateTalk::class, ['Talk Details', 'Submission', 'Speaker']],
     'user' => [CreateUser::class, ['Account', 'Password']],
 ]);

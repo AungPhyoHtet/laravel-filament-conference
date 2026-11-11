@@ -1,11 +1,12 @@
 <?php
 
 use App\Enums\Region;
-use App\Filament\Resources\Speakers\Pages\CreateSpeaker;
+use App\Filament\Resources\Speakers\Pages\ListSpeakers;
 use App\Filament\Resources\Venues\Pages\CreateVenue;
 use App\Models\Speaker;
 use App\Models\User;
 use App\Models\Venue;
+use Filament\Actions\CreateAction;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,15 +39,14 @@ it('uploads a speaker avatar from the create form', function (): void {
     Storage::fake('public');
     $this->actingAs(User::factory()->create());
 
-    livewire(CreateSpeaker::class)
-        ->fillForm([
+    livewire(ListSpeakers::class)
+        ->callAction(CreateAction::class, data: [
             'avatar' => UploadedFile::fake()->image('ada.png'),
             'name' => 'Ada Lovelace',
             'email' => 'ada@example.com',
             'bio' => 'First programmer.',
             'twitter_handle' => 'ada',
         ])
-        ->call('create')
         ->assertHasNoFormErrors();
 
     $avatar = Speaker::query()->sole()->avatar;

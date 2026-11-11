@@ -33,4 +33,14 @@ class Speaker extends Model
     {
         return $this->hasMany(Talk::class);
     }
+
+    /**
+     * Profile link for the speaker's Twitter / X handle, or null when no handle is set.
+     */
+    public function twitterUrl(): ?string
+    {
+        $handle = ltrim(trim((string) $this->twitter_handle), '@');
+
+        return $handle === '' ? null : 'https://x.com/'.rawurlencode($handle);
+    }
 }
