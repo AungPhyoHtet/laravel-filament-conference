@@ -13,6 +13,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TalkResource extends Resource
 {
@@ -37,6 +39,19 @@ class TalkResource extends Resource
         return [
             //
         ];
+    }
+
+    /**
+     * Let the edit page open soft-deleted talks so they can be restored or force deleted.
+     *
+     * @return Builder<Talk>
+     */
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 
     public static function getPages(): array

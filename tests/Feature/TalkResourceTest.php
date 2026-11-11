@@ -7,6 +7,10 @@ use App\Filament\Resources\Talks\Pages\ListTalks;
 use App\Models\Speaker;
 use App\Models\Talk;
 use App\Models\User;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\Testing\TestAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 
@@ -173,4 +177,105 @@ it('shows the abstract clamped to two lines with a minimum width', function (): 
 
             return true;
         }, $talk);
+});
+
+it('approves a talk from the table', function (): void {
+    $talk = Talk::factory()->create(['status' => TalkStatus::Submitted]);
+
+    livewire(ListTalks::class)
+        ->callAction(TestAction::make('approve')->table($talk))
+        ->assertNotified('Talk approved');
+
+    expect($talk->refresh()->status)->toBe(TalkStatus::Approved);
+});
+
+it('hides the approve action for talks that are already approved', function (): void {
+    $approved = Talk::factory()->create(['status' => TalkStatus::Approved]);
+    $rejected = Talk::factory()->create(['status' => TalkStatus::Rejected]);
+
+    livewire(ListTalks::class)
+        ->assertActionHidden(TestAction::make('approve')->table($approved))
+        ->assertActionVisible(TestAction::make('approve')->table($rejected));
+});
+
+it('rejects a talk from the table', function (): void {
+    $talk = Talk::factory()->create(['status' => TalkStatus::Submitted]);
+
+    livewire(ListTalks::class)
+        ->callAction(TestAction::make('reject')->table($talk))
+        ->assertNotified('Talk rejected');
+
+    expect($talk->refresh()->status)->toBe(TalkStatus::Rejected);
+});
+
+it('hides the reject action for talks that are already rejected', function (): void {
+    $rejected = Talk::factory()->create(['status' => TalkStatus::Rejected]);
+    $approved = Talk::factory()->create(['status' => TalkStatus::Approved]);
+
+    livewire(ListTalks::class)
+        ->assertActionHidden(TestAction::make('reject')->table($rejected))
+        ->assertActionVisible(TestAction::make('reject')->table($approved));
+});
+
+it('approves the selected talks in bulk', function (): void {
+    $selected = Talk::factory(2)->create(['status' => TalkStatus::Submitted]);
+    $unselected = Talk::factory()->create(['status' => TalkStatus::Submitted]);
+
+    livewire(ListTalks::class)
+        ->selectTableRecords($selected)
+        ->callAction(TestAction::make('approve')->table()->bulk())
+        ->assertNotified('Talks approved');
+
+    $selected->each(fn (Talk $talk) => expect($talk->refresh()->status)->toBe(TalkStatus::Approved));
+    expect($unselected->refresh()->status)->toBe(TalkStatus::Submitted);
+});
+
+it('rejects the selected talks in bulk', function (): void {
+    $selected = Talk::factory(2)->create(['status' => TalkStatus::Submitted]);
+    $unselected = Talk::factory()->create(['status' => TalkStatus::Submitted]);
+
+    livewire(ListTalks::class)
+        ->selectTableRecords($selected)
+        ->callAction(TestAction::make('reject')->table()->bulk())
+        ->assertNotified('Talks rejected');
+
+    $selected->each(fn (Talk $talk) => expect($talk->refresh()->status)->toBe(TalkStatus::Rejected));
+    expect($unselected->refresh()->status)->toBe(TalkStatus::Submitted);
+});
+
+it('soft deletes talks so they can be found with the trashed filter', function (): void {
+    $talk = Talk::factory()->create();
+
+    livewire(ListTalks::class)
+        ->selectTableRecords([$talk])
+        ->callAction(TestAction::make(DeleteBulkAction::class)->table()->bulk())
+        ->assertCanNotSeeTableRecords([$talk])
+        ->filterTable('trashed', false)
+        ->assertCanSeeTableRecords([$talk]);
+
+    expect($talk->refresh()->trashed())->toBeTrue();
+});
+
+it('restores the selected trashed talks in bulk', function (): void {
+    $trashed = Talk::factory(2)->create();
+    $trashed->each->delete();
+
+    livewire(ListTalks::class)
+        ->filterTable('trashed', false)
+        ->selectTableRecords($trashed)
+        ->callAction(TestAction::make(RestoreBulkAction::class)->table()->bulk());
+
+    $trashed->each(fn (Talk $talk) => expect($talk->refresh()->trashed())->toBeFalse());
+});
+
+it('permanently deletes the selected trashed talks in bulk', function (): void {
+    $talk = Talk::factory()->create();
+    $talk->delete();
+
+    livewire(ListTalks::class)
+        ->filterTable('trashed', false)
+        ->selectTableRecords([$talk])
+        ->callAction(TestAction::make(ForceDeleteBulkAction::class)->table()->bulk());
+
+    expect(Talk::withTrashed()->find($talk->getKey()))->toBeNull();
 });

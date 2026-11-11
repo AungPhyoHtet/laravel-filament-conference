@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Talks\Pages;
 
 use App\Filament\Resources\Talks\TalkResource;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditTalk extends EditRecord
@@ -14,6 +16,8 @@ class EditTalk extends EditRecord
     {
         return [
             DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
         ];
     }
 }

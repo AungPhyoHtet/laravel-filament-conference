@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Talk extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.
@@ -37,5 +38,25 @@ class Talk extends Model
     public function conferences(): BelongsToMany
     {
         return $this->belongsToMany(Conference::class);
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === TalkStatus::Approved;
+    }
+
+    public function approve(): void
+    {
+        $this->update(['status' => TalkStatus::Approved]);
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === TalkStatus::Rejected;
+    }
+
+    public function reject(): void
+    {
+        $this->update(['status' => TalkStatus::Rejected]);
     }
 }

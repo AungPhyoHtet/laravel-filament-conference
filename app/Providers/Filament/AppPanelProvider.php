@@ -31,6 +31,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('/')
             ->login()
+            ->databaseNotifications()
             ->colors([
                 'primary' => Color::Indigo,
                 'gray' => Color::Slate,
