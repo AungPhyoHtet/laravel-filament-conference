@@ -8,6 +8,7 @@ use App\Models\Speaker;
 use App\Models\Talk;
 use App\Models\User;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 
 use function Pest\Livewire\livewire;
 
@@ -106,4 +107,70 @@ it('rejects a blank title from the table', function (): void {
         ->call('updateTableColumnState', 'title', (string) $talk->getKey(), '');
 
     expect($talk->refresh()->title)->toBe('Old title');
+});
+
+it('filters talks by length', function (): void {
+    $keynote = Talk::factory()->create(['length' => TalkLength::Keynote]);
+    $lightning = Talk::factory()->create(['length' => TalkLength::Lightning]);
+
+    livewire(ListTalks::class)
+        ->filterTable('length', [TalkLength::Keynote->value])
+        ->assertCanSeeTableRecords([$keynote])
+        ->assertCanNotSeeTableRecords([$lightning]);
+});
+
+it('filters talks by speaker', function (): void {
+    $speaker = Speaker::factory()->create();
+    $speakersTalk = Talk::factory()->for($speaker)->create();
+    $otherTalk = Talk::factory()->create();
+
+    livewire(ListTalks::class)
+        ->filterTable('speaker', $speaker->getKey())
+        ->assertCanSeeTableRecords([$speakersTalk])
+        ->assertCanNotSeeTableRecords([$otherTalk]);
+});
+
+it('filters talks by whether they are new', function (): void {
+    $newTalk = Talk::factory()->create(['new_talk' => true]);
+    $repeatTalk = Talk::factory()->create(['new_talk' => false]);
+
+    livewire(ListTalks::class)
+        ->filterTable('new_talk', false)
+        ->assertCanSeeTableRecords([$repeatTalk])
+        ->assertCanNotSeeTableRecords([$newTalk]);
+});
+
+it('shows only talks with the selected status tab', function (): void {
+    $approved = Talk::factory()->create(['status' => TalkStatus::Approved]);
+    $submitted = Talk::factory()->create(['status' => TalkStatus::Submitted]);
+
+    livewire(ListTalks::class)
+        ->assertCanSeeTableRecords([$approved, $submitted])
+        ->set('activeTab', TalkStatus::Approved->value)
+        ->assertCanSeeTableRecords([$approved])
+        ->assertCanNotSeeTableRecords([$submitted]);
+});
+
+it('counts talks on each status tab', function (): void {
+    Talk::factory(2)->create(['status' => TalkStatus::Approved]);
+    Talk::factory()->create(['status' => TalkStatus::Rejected]);
+
+    $tabs = livewire(ListTalks::class)->instance()->getTabs();
+
+    expect($tabs['all']->getBadge())->toEqual(3)
+        ->and($tabs[TalkStatus::Approved->value]->getBadge())->toEqual(2)
+        ->and($tabs[TalkStatus::Rejected->value]->getBadge())->toEqual(1)
+        ->and($tabs[TalkStatus::Submitted->value]->getBadge())->toEqual(0);
+});
+
+it('shows the abstract clamped to two lines with a minimum width', function (): void {
+    $talk = Talk::factory()->create();
+
+    livewire(ListTalks::class)
+        ->assertTableColumnExists('abstract', function (TextColumn $column): bool {
+            expect($column->getLineClamp())->toBe(2)
+                ->and($column->getExtraAttributes())->toBe(['style' => 'min-width: 32rem']);
+
+            return true;
+        }, $talk);
 });
