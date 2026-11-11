@@ -26,6 +26,7 @@ class ConferenceSeeder extends Seeder
         Conference::factory(8)
             ->recycle($venues)
             ->create()
+            ->concat(Conference::factory(4)->listed()->recycle($venues)->create())
             ->each(function (Conference $conference) use ($speakers): void {
                 $conferenceSpeakers = $speakers->random(fake()->numberBetween(3, 6));
 

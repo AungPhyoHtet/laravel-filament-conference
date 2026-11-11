@@ -28,4 +28,22 @@ class ConferenceFactory extends Factory
             'is_published' => fake()->boolean(),
         ];
     }
+
+    /**
+     * A published, upcoming conference that appears on the public landing page.
+     */
+    public function listed(): static
+    {
+        return $this->state(function (): array {
+            $startDate = fake()->dateTimeBetween('+2 weeks', '+10 months');
+
+            return [
+                'name' => fake()->words(2, true).' Conf '.$startDate->format('Y'),
+                'start_date' => $startDate,
+                'end_date' => (clone $startDate)->modify('+'.fake()->numberBetween(1, 3).' days'),
+                'status' => ConferenceStatus::Upcoming,
+                'is_published' => true,
+            ];
+        });
+    }
 }
