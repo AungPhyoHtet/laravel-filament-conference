@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
@@ -128,4 +129,31 @@ it('does not let users bulk delete their own account', function (): void {
 
     expect(User::query()->find($this->admin->getKey()))->not->toBeNull()
         ->and(User::query()->find($other->getKey()))->toBeNull();
+});
+
+it('changes another user\'s role', function (): void {
+    $user = User::factory()->create();
+
+    livewire(EditUser::class, ['record' => $user->getRouteKey()])
+        ->fillForm(['role' => UserRole::Speaker])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($user->refresh()->role)->toBe(UserRole::Speaker);
+});
+
+it('stops admins changing their own role', function (): void {
+    livewire(EditUser::class, ['record' => $this->admin->getRouteKey()])
+        ->assertFormFieldIsDisabled('role');
+});
+
+it('updates the linked speaker profile when a speaker account\'s name or email changes', function (): void {
+    $user = User::factory()->speaker()->create();
+
+    livewire(EditUser::class, ['record' => $user->getRouteKey()])
+        ->fillForm(['name' => 'Ada Lovelace', 'email' => 'ada@example.com'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($user->speaker->refresh()->only(['name', 'email']))->toBe(['name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
 });

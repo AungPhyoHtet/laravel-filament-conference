@@ -32,7 +32,6 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('admin')
             ->login()
-            ->registration()
             ->passwordReset()
             ->emailVerification()
             ->brandName('Kelvin & Wayne Tech')

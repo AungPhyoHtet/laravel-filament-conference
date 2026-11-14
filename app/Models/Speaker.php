@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
@@ -11,6 +12,20 @@ use Illuminate\Support\Facades\Storage;
 class Speaker extends Model
 {
     use HasFactory;
+
+    /**
+     * A speaker linked to an account always takes its name and email from that account.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Speaker $speaker): void {
+            if ($speaker->user_id === null) {
+                return;
+            }
+
+            $speaker->fill($speaker->user()->sole()->only(['name', 'email']));
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -23,6 +38,16 @@ class Speaker extends Model
             'id' => 'integer',
             'qualifications' => 'array',
         ];
+    }
+
+    /**
+     * The account the speaker signs in to the speaker panel with, if any.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

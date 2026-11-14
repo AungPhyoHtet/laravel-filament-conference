@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Enums\UserRole;
 use App\Filament\Concerns\BuildsFormSections;
+use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -38,6 +41,12 @@ class UserForm
                     ->unique(ignoreRecord: true),
                 DateTimePicker::make('email_verified_at')
                     ->label('Email verified at'),
+                Select::make('role')
+                    ->options(UserRole::class)
+                    ->default(UserRole::Admin)
+                    ->helperText('Admins use /admin. Speakers use /speaker, once they are linked to a speaker profile.')
+                    ->disabled(fn (?User $record): bool => $record?->is(auth()->user()) ?? false)
+                    ->required(),
             ]);
     }
 
