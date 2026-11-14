@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\ConferenceStatus;
 use App\Enums\Region;
 use App\Models\Venue;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ConferenceFactory extends Factory
@@ -21,7 +22,11 @@ class ConferenceFactory extends Factory
             'description' => fake()->paragraphs(3, true),
             'start_date' => $startDate,
             'end_date' => (clone $startDate)->modify('+'.fake()->numberBetween(1, 3).' days'),
-            'status' => fake()->randomElement(ConferenceStatus::cases()),
+            'status' => fn (array $attributes): ConferenceStatus => match (true) {
+                CarbonImmutable::parse($attributes['start_date'])->isFuture() => ConferenceStatus::Upcoming,
+                CarbonImmutable::parse($attributes['end_date'])->isPast() => ConferenceStatus::Completed,
+                default => ConferenceStatus::Ongoing,
+            },
             'venue_id' => Venue::factory(),
             'region' => fn (array $attributes): Region => Venue::query()->find($attributes['venue_id'])?->region
                 ?? fake()->randomElement(Region::cases()),

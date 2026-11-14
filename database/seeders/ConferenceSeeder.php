@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Attendee;
 use App\Models\Conference;
 use App\Models\Speaker;
 use App\Models\Talk;
@@ -36,8 +35,6 @@ class ConferenceSeeder extends Seeder
                 $conference->talks()->attach(
                     Talk::query()->whereIn('speaker_id', $conferenceSpeakers->modelKeys())->pluck('id'),
                 );
-
-                Attendee::factory(fake()->numberBetween(0, 15))->for($conference)->create();
             });
     }
 }

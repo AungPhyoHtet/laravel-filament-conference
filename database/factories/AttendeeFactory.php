@@ -22,6 +22,8 @@ class AttendeeFactory extends Factory
             'conference_id' => Conference::factory(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'created_at' => $signedUpAt = fake()->dateTimeBetween('-60 days'),
+            'updated_at' => $signedUpAt,
         ];
     }
 }
