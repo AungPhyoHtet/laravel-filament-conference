@@ -15,12 +15,15 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class TalkResource extends Resource
 {
     protected static ?string $model = Talk::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMicrophone;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Program';
 
     protected static ?string $recordTitleAttribute = 'title';
 

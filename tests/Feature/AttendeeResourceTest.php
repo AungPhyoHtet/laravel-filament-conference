@@ -2,9 +2,11 @@
 
 use App\Enums\ConferenceStatus;
 use App\Enums\Region;
+use App\Filament\Resources\Attendees\AttendeeResource;
 use App\Filament\Resources\Attendees\Pages\CreateAttendee;
 use App\Filament\Resources\Attendees\Pages\EditAttendee;
 use App\Filament\Resources\Attendees\Pages\ListAttendees;
+use App\Filament\Resources\Attendees\Pages\ViewAttendee;
 use App\Filament\Resources\Attendees\Widgets\AttendeeSignUpsChart;
 use App\Filament\Resources\Attendees\Widgets\AttendeesStatsOverview;
 use App\Models\Attendee;
@@ -169,4 +171,32 @@ it('shows the stats and chart widgets on the attendees list', function (): void 
     livewire(ListAttendees::class)
         ->assertSeeLivewire(AttendeesStatsOverview::class)
         ->assertSeeLivewire(AttendeeSignUpsChart::class);
+});
+
+it('finds attendees in global search by email with view and edit actions', function (): void {
+    $conference = Conference::factory()->create(['name' => 'Laracon EU']);
+    $ada = Attendee::factory()->for($conference)->create(['name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+    Attendee::factory()->for($conference)->create(['name' => 'Grace Hopper', 'email' => 'grace@example.com']);
+
+    $results = AttendeeResource::getGlobalSearchResults('ada@example');
+
+    expect($results)->toHaveCount(1)
+        ->and($results->first()->title)->toBe('Ada Lovelace (ada@example.com)')
+        ->and($results->first()->details)->toBe(['Conference' => 'Laracon EU'])
+        ->and($results->first()->url)->toBe(AttendeeResource::getUrl('view', ['record' => $ada]))
+        ->and(collect($results->first()->actions)->map(fn ($action): array => [$action->getName(), $action->getUrl()])->all())->toBe([
+            ['view', AttendeeResource::getUrl('view', ['record' => $ada])],
+            ['edit', AttendeeResource::getUrl('edit', ['record' => $ada])],
+        ]);
+});
+
+it('shows an attendee on the view page', function (): void {
+    $attendee = Attendee::factory()->create(['name' => 'Ada Lovelace']);
+
+    livewire(ViewAttendee::class, ['record' => $attendee->getRouteKey()])
+        ->assertOk()
+        ->assertSchemaStateSet([
+            'name' => 'Ada Lovelace',
+            'email' => $attendee->email,
+        ]);
 });
