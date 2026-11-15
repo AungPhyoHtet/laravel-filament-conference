@@ -4,6 +4,7 @@ namespace App\Filament\Speaker\Pages\Auth;
 
 use App\Filament\Concerns\BuildsFormSections;
 use App\Filament\Resources\Speakers\Schemas\SpeakerForm;
+use Awcodes\Shout\Components\Shout;
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -21,6 +22,12 @@ class EditProfile extends BaseEditProfile
     {
         return $schema
             ->components([
+                Shout::make('incomplete-profile')
+                    ->type('warning')
+                    ->heading('Finish your speaker profile')
+                    ->content('Add a bio and your Twitter handle so attendees know who you are.')
+                    ->visible(fn (): bool => blank(strip_tags((string) $this->getUser()->speaker?->bio)))
+                    ->columnSpanFull(),
                 self::section('Account', 'Your name and email are also shown on your speaker profile.', Heroicon::OutlinedUser)
                     ->schema([
                         $this->getNameFormComponent(),

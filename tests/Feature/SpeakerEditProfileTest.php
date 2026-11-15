@@ -73,3 +73,19 @@ it('requires a bio on the speaker profile', function (): void {
 
     expect($user->speaker->refresh()->bio)->toBe($originalBio);
 });
+
+it('asks a speaker with no bio to finish their profile', function (): void {
+    $this->actingAs(User::factory()->speaker()->create());
+    auth()->user()->speaker->update(['bio' => '<p></p>']);
+
+    livewire(EditProfile::class)
+        ->assertSchemaComponentVisible('incomplete-profile');
+});
+
+it('does not nag a speaker who has written a bio', function (): void {
+    $this->actingAs(User::factory()->speaker()->create());
+    auth()->user()->speaker->update(['bio' => '<p>First programmer.</p>']);
+
+    livewire(EditProfile::class)
+        ->assertSchemaComponentHidden('incomplete-profile');
+});

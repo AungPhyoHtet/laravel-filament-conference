@@ -19,14 +19,24 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 
 class SpeakerPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->plugins([
+                EnvironmentIndicatorPlugin::make()
+                    ->color(fn () => match (app()->environment()) {
+                        'production' => null,
+                        'staging' => Color::Orange,
+                        default => Color::Blue,
+                    }),
+            ])
             ->id('speaker')
             ->path('speaker')
+            ->viteTheme('resources/css/filament/speaker/theme.css')
             ->login()
             ->registration(Register::class)
             ->passwordReset()

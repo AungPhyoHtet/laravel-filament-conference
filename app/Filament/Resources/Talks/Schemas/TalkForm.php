@@ -5,11 +5,13 @@ namespace App\Filament\Resources\Talks\Schemas;
 use App\Enums\TalkLength;
 use App\Enums\TalkStatus;
 use App\Filament\Concerns\BuildsFormSections;
+use Awcodes\Shout\Components\Shout;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -50,6 +52,7 @@ class TalkForm
                 Select::make('status')
                     ->options(TalkStatus::class)
                     ->default(TalkStatus::Submitted)
+                    ->live()
                     ->required(),
                 Select::make('length')
                     ->options(TalkLength::class)
@@ -59,7 +62,29 @@ class TalkForm
                     ->label('New talk')
                     ->helperText('Has not been given at another conference.')
                     ->default(true),
+                self::statusNotice(),
             ]);
+    }
+
+    /**
+     * Tells the admin what the chosen status means for the speaker, who can only edit submitted talks.
+     */
+    protected static function statusNotice(): Shout
+    {
+        return Shout::make('status-notice')
+            ->type(fn (Get $get): string => self::status($get) === TalkStatus::Approved ? 'success' : 'danger')
+            ->content(fn (Get $get): string => self::status($get) === TalkStatus::Approved
+                ? 'This talk is accepted. The speaker can no longer edit it.'
+                : 'This talk is turned down. The speaker can no longer edit it.')
+            ->visible(fn (Get $get): bool => self::status($get) !== TalkStatus::Submitted)
+            ->columnSpanFull();
+    }
+
+    protected static function status(Get $get): TalkStatus
+    {
+        $status = $get('status');
+
+        return $status instanceof TalkStatus ? $status : (TalkStatus::tryFrom((string) $status) ?? TalkStatus::Submitted);
     }
 
     protected static function speakerSection(): Section

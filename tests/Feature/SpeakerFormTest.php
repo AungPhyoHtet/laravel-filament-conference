@@ -69,3 +69,18 @@ it('lets an unlinked speaker have their own name and email', function (): void {
 
     expect($speaker->refresh()->only(['name', 'email']))->toBe(['name' => 'Grace Hopper', 'email' => 'grace@example.com']);
 });
+
+it('warns when a speaker has no account to sign in with', function (bool $isLinked): void {
+    $this->actingAs(User::factory()->create());
+    $speaker = $isLinked ? User::factory()->speaker()->create()->speaker : Speaker::factory()->create();
+
+    $component = livewire(ListSpeakers::class)
+        ->mountAction(TestAction::make(EditAction::class)->table($speaker));
+
+    $isLinked
+        ? $component->assertSchemaComponentHidden('no-account', 'mountedActionSchema0')
+        : $component->assertSchemaComponentVisible('no-account', 'mountedActionSchema0');
+})->with([
+    'unlinked' => [false],
+    'linked' => [true],
+]);

@@ -5,7 +5,10 @@ namespace App\Filament\Resources\Speakers\Schemas;
 use App\Enums\SpeakerQualification;
 use App\Enums\UserRole;
 use App\Filament\Concerns\BuildsFormSections;
+use App\Filament\Resources\Users\UserResource;
 use App\Models\User;
+use Awcodes\Shout\Components\Shout;
+use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -39,6 +42,18 @@ class SpeakerForm
     {
         return self::section('Account', 'The speaker panel account that manages this profile.', Heroicon::OutlinedKey, columns: 1)
             ->schema([
+                Shout::make('no-account')
+                    ->type('warning')
+                    ->content('This speaker has no account, so they cannot sign in to manage their profile or talks.')
+                    ->visible(fn (Get $get): bool => blank($get('user_id')))
+                    ->actions([
+                        Action::make('createAccount')
+                            ->label('Create an account')
+                            ->url(UserResource::getUrl('create'))
+                            ->button()
+                            ->color('warning'),
+                    ])
+                    ->inlineActions(),
                 Select::make('user_id')
                     ->label('User account')
                     ->relationship(

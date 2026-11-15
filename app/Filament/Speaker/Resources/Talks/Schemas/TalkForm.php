@@ -5,6 +5,7 @@ namespace App\Filament\Speaker\Resources\Talks\Schemas;
 use App\Enums\TalkLength;
 use App\Filament\Concerns\BuildsFormSections;
 use App\Filament\Resources\Talks\Schemas\TalkForm as AdminTalkForm;
+use Awcodes\Shout\Components\Shout;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
@@ -22,6 +23,10 @@ class TalkForm
     {
         return $schema
             ->components([
+                Shout::make('review-notice')
+                    ->heading('The organisers review every talk')
+                    ->content('You can change your talk until it is approved or rejected.')
+                    ->columnSpanFull(),
                 AdminTalkForm::detailsSection(),
                 self::formatSection(),
             ]);

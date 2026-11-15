@@ -6,7 +6,12 @@ import { defineConfig, lazyPlugins } from 'vite-plus';
 export default defineConfig({
     plugins: lazyPlugins(() => [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/css/filament/app/theme.css',
+                'resources/css/filament/speaker/theme.css',
+            ],
             refresh: [
                 ... refreshPaths,
                 'app/Livewire/**',

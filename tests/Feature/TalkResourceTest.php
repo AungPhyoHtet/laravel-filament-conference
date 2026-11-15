@@ -8,6 +8,7 @@ use App\Filament\Resources\Talks\Pages\ListTalks;
 use App\Models\Speaker;
 use App\Models\Talk;
 use App\Models\User;
+use Awcodes\Shout\Components\Shout;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
@@ -308,3 +309,21 @@ it('permanently deletes the selected trashed talks in bulk', function (): void {
 
     expect(Talk::withTrashed()->find($talk->getKey()))->toBeNull();
 });
+
+it('explains what the chosen review status means for the speaker', function (TalkStatus $status, ?string $type): void {
+    $component = livewire(CreateTalk::class)->fillForm(['status' => $status]);
+
+    if ($type === null) {
+        $component->assertSchemaComponentHidden('status-notice');
+
+        return;
+    }
+
+    $component
+        ->assertSchemaComponentVisible('status-notice')
+        ->assertSchemaComponentExists('status-notice', checkComponentUsing: fn (Shout $notice): bool => $notice->getType() === $type);
+})->with([
+    'submitted' => [TalkStatus::Submitted, null],
+    'approved' => [TalkStatus::Approved, 'success'],
+    'rejected' => [TalkStatus::Rejected, 'danger'],
+]);

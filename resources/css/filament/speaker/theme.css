@@ -1,0 +1,6 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Speaker/**/*';
+@source '../../../../resources/views/filament/speaker/**/*';
+
+@source '../../../../vendor/awcodes/shout/resources/**/*.blade.php';
